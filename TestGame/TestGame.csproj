@@ -7,8 +7,23 @@
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Silk.NET.Windowing" Version="2.22.0" />
+    <PackageReference Include="StbImageSharp" Version="2.30.15" />
+  </ItemGroup>
 	
   <ItemGroup>
+    <ProjectReference Include="..\Engine.Rendering.Silk\Engine.Rendering.Silk.csproj" />
     <ProjectReference Include="..\Engine\Engine.csproj" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <None Update="Assets\image.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\svo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

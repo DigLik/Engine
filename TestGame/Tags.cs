@@ -3,3 +3,4 @@
 public struct RotatableTag();
 public struct MoveableTag();
 public struct SizableTag();
+public struct StationaryTag();

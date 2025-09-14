@@ -76,8 +76,9 @@ internal sealed class HierarchyService(IWorldApi world)
         RemoveParent(destroyedEntity);
         if (_parentToChildren.TryGetValue(destroyedEntity.Id, out var children))
         {
-            foreach (var child in children.ToArray())
+            for (int i = children.Count - 1; i >= 0; i--)
             {
+                var child = children[i];
                 if (world.IsAlive(child)) RemoveParent(child);
             }
         }

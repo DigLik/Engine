@@ -9,6 +9,9 @@ public sealed class Archetype : IDisposable
     private readonly List<Chunk> _chunks = [];
     private readonly int _chunkCapacity;
 
+    internal readonly Dictionary<int, Archetype> AddTransitions = [];
+    internal readonly Dictionary<int, Archetype> RemoveTransitions = [];
+
     public IReadOnlyList<Chunk> Chunks => _chunks;
 
     public Archetype(int id, ArchetypeKey key, ReadOnlySpan<int> typeIds, int chunkCapacity = 256)

@@ -16,6 +16,8 @@ public partial interface IWorldApi
 
     ref T Ref<T>(Entity e) where T : unmanaged;
 
+    bool TryGetRef<T>(Entity e, out T component) where T : unmanaged;
+
     bool IsAlive(Entity e);
 
     QueryBuilder Builder();
@@ -28,5 +30,6 @@ public partial interface IWorldApi
 
     IReadOnlyList<Entity> GetChildren(Entity parent);
 
+    int GetTypeId(Type type);
     int GetTypeId<T>() where T : unmanaged;
 }

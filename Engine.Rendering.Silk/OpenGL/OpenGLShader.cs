@@ -6,6 +6,7 @@ internal sealed class OpenGLShader : IDisposable
 {
     public readonly uint Program;
     private readonly GL _gl;
+    private readonly Dictionary<string, int> _uniformLocations = [];
 
     public OpenGLShader(GL gl, string vertexSource, string fragmentSource)
     {
@@ -33,7 +34,17 @@ internal sealed class OpenGLShader : IDisposable
 
     public void Use() => _gl.UseProgram(Program);
 
-    public int GetUniformLocation(string name) => _gl.GetUniformLocation(Program, name);
+    public int GetUniformLocation(string name)
+    {
+        if (_uniformLocations.TryGetValue(name, out int location))
+        {
+            return location;
+        }
+
+        location = _gl.GetUniformLocation(Program, name);
+        _uniformLocations[name] = location;
+        return location;
+    }
 
     private uint CompileShader(ShaderType type, string source)
     {

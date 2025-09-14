@@ -1,6 +1,7 @@
 ﻿using Engine.Core.Services;
 using Engine.DataStructures;
 using Engine.ECS.Components;
+using System.Runtime.CompilerServices;
 
 namespace Engine.ECS.Archetypes;
 
@@ -8,6 +9,7 @@ public sealed partial class ArchetypeWorld : IWorldApi, IDisposable
 {
     private readonly ArchetypeRegistry _registry;
     private readonly HierarchyService _hierarchy;
+    private readonly TypeIndex _types;
     public IServiceRegistry Services { get; }
 
     private struct EntityRecord
@@ -18,20 +20,25 @@ public sealed partial class ArchetypeWorld : IWorldApi, IDisposable
         public int Row;
     }
 
-    private EntityRecord[] _entities = new EntityRecord[8192];
+    private EntityRecord[] _entities = new EntityRecord[1024];
     private uint _nextEntityId;
     private readonly Stack<uint> _free = new();
+    private readonly Archetype _emptyArchetype;
 
     public ArchetypeWorld(TypeIndex types, IServiceRegistry services, int chunkCapacity = 256)
     {
+        _types = types;
         _registry = new ArchetypeRegistry(types, chunkCapacity);
         Services = services;
         _hierarchy = new HierarchyService(this);
+        _emptyArchetype = _registry.GetOrCreate(new TypeMask(), []);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsAlive(Entity e)
         => e.Generation != 0 && (uint)e.Id < (uint)_entities.Length && _entities[e.Id].Generation == e.Generation;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private ref EntityRecord GetRecord(Entity e)
     {
         if (!IsAlive(e))
@@ -54,11 +61,10 @@ public sealed partial class ArchetypeWorld : IWorldApi, IDisposable
         }
 
         ref var rec = ref _entities[id];
-        if (rec.Generation == 0)
-        {
-            rec.Generation = 1;
-        }
-        rec.Archetype = null;
+        rec.Generation = rec.Generation == 0 ? 1 : rec.Generation + 1;
+        rec.Archetype = _emptyArchetype;
+        rec.Row = _emptyArchetype.GetOrCreateWritableChunk(_registry).AddEntity(new Entity(id, rec.Generation));
+        rec.ChunkIndex = _emptyArchetype.Chunks.Count - 1;
 
         return new Entity(id, rec.Generation);
     }
@@ -87,56 +93,55 @@ public sealed partial class ArchetypeWorld : IWorldApi, IDisposable
 
     private void DestroySingleEntity(Entity e)
     {
-        if (!IsAlive(e)) return;
-
         ref var rec = ref _entities[e.Id];
         var oldArchetype = rec.Archetype;
-        var oldRow = rec.Row;
-        var oldChunkIndex = rec.ChunkIndex;
 
         _hierarchy.OnEntityDestroyed(e);
 
         if (oldArchetype is not null)
         {
-            var chunk = oldArchetype.Chunks[oldChunkIndex];
-            int lastRow = chunk.RemoveAtSwapBack(oldRow);
+            var chunk = oldArchetype.Chunks[rec.ChunkIndex];
+            int lastRow = chunk.RemoveAtSwapBack(rec.Row);
 
-            if (oldRow != lastRow)
+            if (rec.Row != lastRow)
             {
-                Entity movedEntity = chunk.Entities[oldRow];
-                _entities[movedEntity.Id].Row = oldRow;
+                Entity movedEntity = chunk.Entities[rec.Row];
+                _entities[movedEntity.Id].Row = rec.Row;
             }
         }
 
         rec.Archetype = null;
         rec.Generation++;
-        if (rec.Generation == 0)
-        {
-            rec.Generation = 1;
-        }
+        if (rec.Generation == 0) rec.Generation = 1;
         _free.Push(e.Id);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Has<T>(Entity e) where T : unmanaged
     {
         if (!IsAlive(e)) return false;
         ref var rec = ref _entities[e.Id];
-        if (rec.Archetype is null) return false;
-
         int id = _registry.GetTypeId<T>();
-        return rec.Archetype.Key.Mask.Contains(id);
+        return rec.Archetype!.Key.Mask.Contains(id);
     }
 
     public ref T Add<T>(Entity e) where T : unmanaged
     {
-        ref var rec = ref EnsureEntity(e);
-        int id = _registry.GetTypeId<T>();
-        var currentMask = rec.Archetype?.Key.Mask;
+        ref var rec = ref GetRecord(e);
+        int typeId = _registry.GetTypeId<T>();
 
-        var newMask = currentMask?.Clone() ?? new TypeMask();
-        newMask.Add(id);
+        var currentArchetype = rec.Archetype!;
+        if (currentArchetype.Key.Mask.Contains(typeId))
+        {
+            return ref GetRefInRecord<T>(rec);
+        }
 
-        Migrate(e, ref rec, newMask);
+        if (!currentArchetype.AddTransitions.TryGetValue(typeId, out var targetArchetype))
+        {
+            targetArchetype = FindOrCreateTransitionArchetype(currentArchetype, typeId, true);
+        }
+
+        Migrate(e, ref rec, targetArchetype);
         return ref GetRefInRecord<T>(rec);
     }
 
@@ -151,18 +156,72 @@ public sealed partial class ArchetypeWorld : IWorldApi, IDisposable
     {
         if (!IsAlive(e)) return false;
         ref var rec = ref _entities[e.Id];
-        if (rec.Archetype is null) return false;
+        int typeId = _registry.GetTypeId<T>();
 
-        int id = _registry.GetTypeId<T>();
-        if (!rec.Archetype.Key.Mask.Contains(id)) return false;
+        var currentArchetype = rec.Archetype!;
+        if (!currentArchetype.Key.Mask.Contains(typeId))
+        {
+            return false;
+        }
 
-        var newMask = rec.Archetype.Key.Mask.Clone();
-        newMask.Remove(id);
+        if (!currentArchetype.RemoveTransitions.TryGetValue(typeId, out var targetArchetype))
+        {
+            targetArchetype = FindOrCreateTransitionArchetype(currentArchetype, typeId, false);
+        }
 
-        Migrate(e, ref rec, newMask);
+        Migrate(e, ref rec, targetArchetype);
         return true;
     }
 
+    private Archetype FindOrCreateTransitionArchetype(Archetype from, int typeId, bool isAdd)
+    {
+        var newMask = from.Key.Mask.Clone();
+        if (isAdd)
+            newMask.Add(typeId);
+        else
+            newMask.Remove(typeId);
+
+        var targetArchetype = _registry.GetOrCreate(newMask, newMask.SetIds);
+
+        if (isAdd)
+            from.AddTransitions[typeId] = targetArchetype;
+        else
+            from.RemoveTransitions[typeId] = targetArchetype;
+
+        return targetArchetype;
+    }
+
+    private void Migrate(Entity e, ref EntityRecord rec, Archetype targetArch)
+    {
+        var srcArch = rec.Archetype!;
+        var srcChunk = srcArch.Chunks[rec.ChunkIndex];
+        int srcRow = rec.Row;
+
+        var dstChunk = targetArch.GetOrCreateWritableChunk(_registry);
+        int dstRow = dstChunk.AddEntity(e);
+
+        foreach (int tId in srcArch.Key.Mask.SetIds)
+        {
+            if (targetArch.TryGetColumnIndex(tId, out var dstColIdx))
+            {
+                srcArch.TryGetColumnIndex(tId, out var srcColIdx);
+                dstChunk.Columns[dstColIdx].MoveFrom(srcChunk.Columns[srcColIdx], srcRow, dstRow);
+            }
+        }
+
+        int lastRow = srcChunk.RemoveAtSwapBack(srcRow);
+        if (srcRow != lastRow)
+        {
+            Entity movedE = srcChunk.Entities[srcRow];
+            _entities[movedE.Id].Row = srcRow;
+        }
+
+        rec.Archetype = targetArch;
+        rec.ChunkIndex = targetArch.Chunks.Count - 1;
+        rec.Row = dstRow;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ref T Ref<T>(Entity e) where T : unmanaged
     {
         ref var rec = ref GetRecord(e);
@@ -171,94 +230,37 @@ public sealed partial class ArchetypeWorld : IWorldApi, IDisposable
 
     public bool TryGetRef<T>(Entity e, out T component) where T : unmanaged
     {
-        if (IsAlive(e))
-        {
-            ref var rec = ref _entities[e.Id];
-            if (rec.Archetype is not null)
-            {
-                int id = _registry.GetTypeId<T>();
-                if (rec.Archetype.Key.Mask.Contains(id))
-                {
-                    component = GetRefInRecord<T>(rec);
-                    return true;
-                }
-            }
-        }
         component = default;
-        return false;
+        if (!IsAlive(e)) return false;
+
+        ref var rec = ref _entities[e.Id];
+        if (rec.Archetype is null) return false;
+
+        int id = _registry.GetTypeId<T>();
+        if (!rec.Archetype.Key.Mask.Contains(id)) return false;
+
+        component = GetRefInRecord<T>(rec);
+        return true;
     }
 
-    private ref EntityRecord EnsureEntity(Entity e)
-    {
-        if (!IsAlive(e))
-        {
-            if (e.Id < _entities.Length && _entities[e.Id].Generation != e.Generation)
-                throw new InvalidOperationException($"Entity {e} is not alive (stale generation).");
-
-            if (e.Id >= _entities.Length) Array.Resize(ref _entities, Math.Max(_entities.Length << 1, (int)e.Id + 1));
-
-            ref var rec = ref _entities[e.Id];
-            if (rec.Generation != e.Generation && rec.Archetype != null)
-                throw new InvalidOperationException($"Cannot add component to stale entity {e}.");
-        }
-        return ref _entities[e.Id];
-    }
-
-    private void Migrate(Entity e, ref EntityRecord rec, TypeMask newMask)
-    {
-        var typeIdsSpan = newMask.SetIds;
-        var targetArch = _registry.GetOrCreate(newMask, typeIdsSpan);
-
-        var chunk = targetArch.GetOrCreateWritableChunk(_registry);
-        int newRow = chunk.AddEntity(e);
-
-        if (rec.Archetype is not null)
-        {
-            var srcArch = rec.Archetype;
-            var srcChunk = srcArch.Chunks[rec.ChunkIndex];
-            int srcRow = rec.Row;
-
-            foreach (int tId in srcArch.Key.Mask.SetIds)
-            {
-                if (targetArch.TryGetColumnIndex(tId, out var dstColIdx))
-                {
-                    srcArch.TryGetColumnIndex(tId, out var srcColIdx);
-                    chunk.Columns[dstColIdx].MoveFrom(srcChunk.Columns[srcColIdx], srcRow, newRow);
-                }
-            }
-
-            int lastRow = srcChunk.RemoveAtSwapBack(srcRow);
-            if (srcRow != lastRow)
-            {
-                Entity movedE = srcChunk.Entities[srcRow];
-                _entities[movedE.Id].Row = srcRow;
-            }
-        }
-
-        rec.Archetype = targetArch;
-        rec.ChunkIndex = targetArch.Chunks.Count - 1;
-        rec.Row = newRow;
-    }
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private ref T GetRefInRecord<T>(EntityRecord rec) where T : unmanaged
     {
-        var arch = rec.Archetype ?? throw new InvalidOperationException("Entity has no archetype.");
+        var arch = rec.Archetype!;
         int typeId = _registry.GetTypeId<T>();
         if (!arch.TryGetColumnIndex(typeId, out var colIdx))
-            throw new InvalidOperationException("Inconsistency in archetype data: column not found.");
+            throw new InvalidOperationException($"Component {typeof(T).Name} not found in archetype.");
 
         var chunk = arch.Chunks[rec.ChunkIndex];
         return ref ((Column<T>)chunk.Columns[colIdx]).Ref(rec.Row);
     }
 
     public QueryBuilder Builder() => new(_registry);
-
     public void SetParent(Entity child, Entity parent, bool cascadeDelete = true) => _hierarchy.SetParent(child, parent, cascadeDelete);
     public void RemoveParent(Entity child) => _hierarchy.RemoveParent(child);
     public Entity GetParent(Entity child) => _hierarchy.GetParent(child);
     public IReadOnlyList<Entity> GetChildren(Entity parent) => _hierarchy.GetChildren(parent);
-
     public int GetTypeId<T>() where T : unmanaged => _registry.GetTypeId<T>();
-
+    public int GetTypeId(Type type) => _types.Get(type);
     public void Dispose() => _registry.Dispose();
 }

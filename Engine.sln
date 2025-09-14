@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine", "Engine\Engine.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGame", "TestGame\TestGame.csproj", "{EC7985D6-27D7-43E9-AA6C-0597161F3A28}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine.Generator", "Engine.Generator\Engine.Generator.csproj", "{EAA16F03-1C99-44F9-956B-726E85102168}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine.Rendering.Silk", "Engine.Rendering.Silk\Engine.Rendering.Silk.csproj", "{A5D06D03-5B33-48A9-B533-F566E75CCCB2}"
 EndProject
 Global
@@ -25,10 +23,6 @@ Global
 		{EC7985D6-27D7-43E9-AA6C-0597161F3A28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC7985D6-27D7-43E9-AA6C-0597161F3A28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC7985D6-27D7-43E9-AA6C-0597161F3A28}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EAA16F03-1C99-44F9-956B-726E85102168}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EAA16F03-1C99-44F9-956B-726E85102168}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EAA16F03-1C99-44F9-956B-726E85102168}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EAA16F03-1C99-44F9-956B-726E85102168}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A5D06D03-5B33-48A9-B533-F566E75CCCB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A5D06D03-5B33-48A9-B533-F566E75CCCB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5D06D03-5B33-48A9-B533-F566E75CCCB2}.Release|Any CPU.ActiveCfg = Release|Any CPU

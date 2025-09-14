@@ -8,6 +8,7 @@ using Engine.Rendering.Silk;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
+using Silk.NET.Windowing.Glfw;
 using StbImageSharp;
 using System.Numerics;
 
@@ -15,16 +16,18 @@ namespace TestGame;
 
 public static class Program
 {
-    private static IWindow? _window;
-    private static GL? _gl;
-    private static Application? _app;
-    private static SilkRenderDevice? _renderDevice;
-    private static IWorldApi? _world;
+    private static IWindow _window = null!;
+    private static GL _gl = null!;
+    private static Application _app = null!;
+    private static SilkRenderDevice _renderDevice = null!;
+    private static IWorldApi _world = null!;
 
     private static Entity _cameraEntity;
 
     public static void Main()
     {
+        GlfwWindowing.Use();
+
         var options = WindowOptions.Default;
         options.Title = "Engine Test Game";
         options.Size = new Vector2D<int>(1280, 720);
@@ -95,6 +98,9 @@ public static class Program
         _world.Add(sizableCubeEntity, new VisibleTag());
         _world.Add(sizableCubeEntity, new SizableTag());
 
+        _world.SetParent(sizableCubeEntity, rotatableCubeEntity);
+        _world.SetParent(moveableCubeEntity, sizableCubeEntity);
+
         _cameraEntity = _world.CreateEntity();
         _world.Add(_cameraEntity, new TransformComponent(new Vector3(0, 0, 3)));
         _world.Add(_cameraEntity, new Camera
@@ -110,8 +116,21 @@ public static class Program
 
     private static void OnUpdate(double deltaTime) { }
 
+    private static double _timeAccumulator;
+    private static int _frameCounter;
+    private const double _titleUpgradePeriod = 1;
     private static void OnRender(double deltaTime)
     {
+        _timeAccumulator += deltaTime; _frameCounter++;
+        if (_timeAccumulator > _titleUpgradePeriod)
+        {
+            double averageRenderPeriod = _timeAccumulator / _frameCounter;
+            double fps = 1 / averageRenderPeriod;
+            _window!.Title = $"{fps:F2}";
+            _timeAccumulator -= _titleUpgradePeriod;
+            _frameCounter = 0;
+        }
+
         _app?.Tick((float)deltaTime);
     }
 

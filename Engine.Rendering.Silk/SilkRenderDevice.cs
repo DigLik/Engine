@@ -104,8 +104,8 @@ public sealed unsafe class SilkRenderDevice : IRenderDevice
 
         shader.Use();
 
-        _gl.UniformMatrix4(_gl.GetUniformLocation(shader.Program, "view"), 1, false, in _viewMatrix.M11);
-        _gl.UniformMatrix4(_gl.GetUniformLocation(shader.Program, "projection"), 1, false, in _projectionMatrix.M11);
+        _gl.UniformMatrix4(shader.GetUniformLocation("view"), 1, false, in _viewMatrix.M11);
+        _gl.UniformMatrix4(shader.GetUniformLocation("projection"), 1, false, in _projectionMatrix.M11);
 
         if (material.Parameters.TryGetValue("u_Texture", out var textureObj) && textureObj is TextureHandle textureHandle)
         {

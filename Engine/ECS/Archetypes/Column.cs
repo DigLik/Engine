@@ -14,7 +14,6 @@ public abstract class Column(int typeId) : IDisposable
 public unsafe sealed class Column<T>(int typeId, int capacity) : Column(typeId) where T : unmanaged
 {
     private T* _data;
-    private int _capacity = capacity;
     private bool _disposed;
 
     public Column() : this(0, 0)
@@ -25,8 +24,8 @@ public unsafe sealed class Column<T>(int typeId, int capacity) : Column(typeId) 
     public void Initialize(int cap)
     {
         if (_data != null) return;
-        _capacity = cap;
-        _data = (T*)NativeMemory.Alloc((nuint)(_capacity * sizeof(T)));
+        capacity = cap;
+        _data = (T*)NativeMemory.Alloc((nuint)(capacity * sizeof(T)));
     }
 
     public ref T Ref(int index) => ref _data[index];

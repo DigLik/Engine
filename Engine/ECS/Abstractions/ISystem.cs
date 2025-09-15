@@ -1,6 +1,7 @@
 ﻿using Engine.Core.Services;
+using Engine.Core.Timing;
 
-namespace Engine.ECS;
+namespace Engine.ECS.Abstractions;
 
 public interface ISystem
 {

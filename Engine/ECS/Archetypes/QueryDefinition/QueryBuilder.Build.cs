@@ -1,4 +1,4 @@
-﻿namespace Engine.ECS.Archetypes;
+﻿namespace Engine.ECS.Archetypes.QueryDefinition;
 
 public partial class QueryBuilder
 {

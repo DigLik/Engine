@@ -16,7 +16,7 @@ public sealed class RenderQueue
     public void Add(RenderMesh renderMesh, in Matrix4x4 transform)
     {
         var key = (renderMesh.Mesh, renderMesh.Material);
-        ref var batch = ref CollectionsMarshal.GetValueRefOrAddDefault(Batches, key, out bool exists);
+        ref var batch = ref CollectionsMarshal.GetValueRefOrAddDefault(Batches, key, out var exists);
         if (!exists || batch == null)
             batch = [];
         batch.Add(transform);

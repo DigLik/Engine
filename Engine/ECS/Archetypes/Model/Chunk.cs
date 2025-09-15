@@ -1,4 +1,4 @@
-﻿namespace Engine.ECS.Archetypes;
+﻿namespace Engine.ECS.Archetypes.Model;
 
 public sealed class Chunk(int capacity, Column[] columns) : IDisposable
 {
@@ -11,25 +11,25 @@ public sealed class Chunk(int capacity, Column[] columns) : IDisposable
 
     public int AddEntity(Entity e)
     {
-        int row = Count++;
+        var row = Count++;
         Entities[row] = e;
         return row;
     }
 
     public int RemoveAtSwapBack(int row)
     {
-        int last = Count - 1;
+        var last = Count - 1;
         if (row < 0 || row >= Count) throw new IndexOutOfRangeException();
 
         if (row != last)
         {
-            for (int c = 0; c < Columns.Length; c++)
+            for (var c = 0; c < Columns.Length; c++)
                 Columns[c].MoveFrom(Columns[c], last, row);
 
             Entities[row] = Entities[last];
         }
 
-        for (int c = 0; c < Columns.Length; c++)
+        for (var c = 0; c < Columns.Length; c++)
             Columns[c].SetDefault(last);
 
         Count--;

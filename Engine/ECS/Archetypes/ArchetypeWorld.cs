@@ -1,5 +1,8 @@
 ﻿using Engine.Core.Services;
 using Engine.DataStructures;
+using Engine.ECS.Abstractions;
+using Engine.ECS.Archetypes.Model;
+using Engine.ECS.Archetypes.QueryDefinition;
 using Engine.ECS.Components;
 using System.Runtime.CompilerServices;
 

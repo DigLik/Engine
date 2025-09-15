@@ -1,4 +1,6 @@
-﻿namespace Engine.ECS;
+﻿using Engine.ECS.Abstractions;
+
+namespace Engine.ECS;
 
 public sealed class CommandBuffer
 {

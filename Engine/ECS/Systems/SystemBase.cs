@@ -1,5 +1,7 @@
 ﻿using Engine.Core.Services;
-using Engine.ECS.Archetypes;
+using Engine.Core.Timing;
+using Engine.ECS.Abstractions;
+using Engine.ECS.Archetypes.QueryDefinition;
 
 namespace Engine.ECS;
 

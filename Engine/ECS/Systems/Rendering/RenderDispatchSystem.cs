@@ -1,4 +1,5 @@
 ﻿using Engine.Rendering;
+using Engine.Rendering.Abstractions;
 using System.Runtime.InteropServices;
 
 namespace Engine.ECS.Systems.Rendering;

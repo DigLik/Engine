@@ -1,4 +1,6 @@
-﻿namespace Engine.ECS.Archetypes;
+﻿using Engine.ECS.Archetypes.Model;
+
+namespace Engine.ECS.Archetypes.QueryDefinition;
 
 public sealed class Query
 {

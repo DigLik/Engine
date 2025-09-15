@@ -1,6 +1,6 @@
 ﻿using Engine.ECS.Components;
 using Engine.ECS.Components.Rendering;
-using Engine.ECS.Archetypes;
+using Engine.ECS.Archetypes.QueryDefinition;
 
 namespace Engine.ECS.Systems.Rendering;
 

@@ -1,4 +1,6 @@
-﻿namespace Engine.Rendering;
+﻿using Engine.Rendering.Data;
+
+namespace Engine.Rendering;
 
 public sealed class ActiveCameraBuffer
 {

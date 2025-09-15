@@ -1,4 +1,4 @@
-﻿namespace Engine.Rendering;
+﻿namespace Engine.Rendering.Data;
 
 public struct Vertex(Vector3 position, Vector3 normal, Vector2 texCoords)
 {

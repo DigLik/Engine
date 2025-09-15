@@ -1,4 +1,5 @@
 ﻿using Engine.DataStructures;
+using Engine.ECS.Archetypes.Model;
 
 namespace Engine.ECS.Archetypes;
 

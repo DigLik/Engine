@@ -1,4 +1,4 @@
-﻿namespace Engine.Rendering;
+﻿namespace Engine.Rendering.Data;
 
 public sealed class BoundingFrustum
 {

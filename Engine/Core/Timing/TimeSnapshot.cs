@@ -1,4 +1,4 @@
-﻿namespace Engine.Core;
+﻿namespace Engine.Core.Timing;
 
 public readonly record struct TimeSnapshot(
     float DeltaTime,

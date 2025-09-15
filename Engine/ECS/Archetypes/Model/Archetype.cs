@@ -1,4 +1,4 @@
-﻿namespace Engine.ECS.Archetypes;
+﻿namespace Engine.ECS.Archetypes.Model;
 
 public sealed class Archetype : IDisposable
 {
@@ -21,9 +21,9 @@ public sealed class Archetype : IDisposable
         _chunkCapacity = chunkCapacity;
 
         _columnsTemplate = new Column[typeIds.Length];
-        for (int i = 0; i < typeIds.Length; i++)
+        for (var i = 0; i < typeIds.Length; i++)
         {
-            int tId = typeIds[i];
+            var tId = typeIds[i];
             _typeToColumn[tId] = i;
             _columnsTemplate[i] = new ColumnStub(tId);
         }
@@ -41,7 +41,7 @@ public sealed class Archetype : IDisposable
         if (_chunks.Count > 0 && _chunks[^1].HasSpace) return _chunks[^1];
 
         var realColumns = new Column[_columnsTemplate.Length];
-        for (int i = 0; i < realColumns.Length; i++)
+        for (var i = 0; i < realColumns.Length; i++)
         {
             var template = _columnsTemplate[i];
             var factory = registry.GetOrCreateColumnFactory(template.TypeId);

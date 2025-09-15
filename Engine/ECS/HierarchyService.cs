@@ -1,4 +1,5 @@
 ﻿using Engine.DataStructures;
+using Engine.ECS.Abstractions;
 using Engine.ECS.Components;
 
 namespace Engine.ECS;

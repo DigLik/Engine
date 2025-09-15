@@ -1,4 +1,5 @@
-﻿using Engine.ECS.Archetypes;
+﻿using Engine.ECS.Abstractions;
+using Engine.ECS.Archetypes.QueryDefinition;
 using System.ComponentModel;
 
 namespace Engine.ECS;

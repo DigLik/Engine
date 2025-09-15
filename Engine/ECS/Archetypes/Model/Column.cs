@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Engine.ECS.Archetypes;
+namespace Engine.ECS.Archetypes.Model;
 
 public abstract class Column(int typeId) : IDisposable
 {

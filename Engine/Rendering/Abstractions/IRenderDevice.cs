@@ -1,6 +1,7 @@
 ﻿using Engine.ECS.Components.Rendering;
+using Engine.Rendering.Data;
 
-namespace Engine.Rendering;
+namespace Engine.Rendering.Abstractions;
 
 public interface IRenderDevice : IDisposable
 {

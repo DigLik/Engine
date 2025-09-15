@@ -1,4 +1,4 @@
-﻿namespace Engine.ECS.Archetypes;
+﻿namespace Engine.ECS.Archetypes.Model;
 
 public readonly struct ArchetypeKey(TypeMask mask) : IEquatable<ArchetypeKey>
 {

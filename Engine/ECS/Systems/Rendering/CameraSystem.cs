@@ -1,6 +1,7 @@
 ﻿using Engine.ECS.Components;
 using Engine.ECS.Components.Rendering;
 using Engine.Rendering;
+using Engine.Rendering.Data;
 
 namespace Engine.ECS.Systems.Rendering;
 

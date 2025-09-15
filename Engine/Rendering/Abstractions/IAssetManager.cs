@@ -1,6 +1,6 @@
 ﻿using Engine.ECS.Components.Rendering;
 
-namespace Engine.Rendering;
+namespace Engine.Rendering.Abstractions;
 
 public interface IAssetManager
 {

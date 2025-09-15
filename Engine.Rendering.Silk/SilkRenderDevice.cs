@@ -1,4 +1,6 @@
 ﻿using Engine.ECS.Components.Rendering;
+using Engine.Rendering.Abstractions;
+using Engine.Rendering.Data;
 using Engine.Rendering.Silk.OpenGL;
 using Silk.NET.OpenGL;
 using System.Numerics;

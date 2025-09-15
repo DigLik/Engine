@@ -1,4 +1,5 @@
-﻿using Engine.ECS;
+﻿using Engine.ECS.Archetypes.QueryDefinition;
+using Engine.ECS.Querying;
 
 namespace Engine.ECS.Archetypes;
 

@@ -1,6 +1,7 @@
-﻿using Engine.ECS.Archetypes;
+﻿using Engine.ECS.Archetypes.QueryDefinition;
+using Engine.ECS.Querying;
 
-namespace Engine.ECS;
+namespace Engine.ECS.Abstractions;
 
 public partial interface IWorldApi
 {

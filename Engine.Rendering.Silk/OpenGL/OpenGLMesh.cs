@@ -1,4 +1,5 @@
-﻿using Silk.NET.OpenGL;
+﻿using Engine.Rendering.Data;
+using Silk.NET.OpenGL;
 using System.Numerics;
 
 namespace Engine.Rendering.Silk.OpenGL;

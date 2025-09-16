@@ -1,5 +1,5 @@
 ﻿using Engine.ECS.Abstractions;
-using Engine.ECS.Archetypes.QueryDefinition;
+using Engine.ECS.Querying;
 using System.ComponentModel;
 
 namespace Engine.ECS;
@@ -8,22 +8,22 @@ namespace Engine.ECS;
 public readonly partial struct FluentQueryBuilder
 {
     internal readonly IWorldApi World;
-    internal readonly Dictionary<int, Query> QueryCache;
+    internal readonly QueryRegistry Registry;
     internal readonly List<int>? WithIds;
     internal readonly List<int>? WithoutIds;
 
-    internal FluentQueryBuilder(IWorldApi world, Dictionary<int, Query> queryCache)
+    internal FluentQueryBuilder(IWorldApi world, QueryRegistry registry)
     {
         World = world;
-        QueryCache = queryCache;
+        Registry = registry;
         WithIds = null;
         WithoutIds = null;
     }
 
-    internal FluentQueryBuilder(IWorldApi world, Dictionary<int, Query> queryCache, List<int>? withIds, List<int>? withoutIds)
+    internal FluentQueryBuilder(IWorldApi world, QueryRegistry registry, List<int>? withIds, List<int>? withoutIds)
     {
         World = world;
-        QueryCache = queryCache;
+        Registry = registry;
         WithIds = withIds;
         WithoutIds = withoutIds;
     }

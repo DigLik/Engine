@@ -52,6 +52,8 @@ public static class Program
         _renderDevice = new SilkRenderDevice(_gl);
 
         _app = Application.CreateBuilder()
+            .WithInitialEntityCapacity(16)
+            .WithChunkCapacity(16)
             .AddService<IRenderDevice>(_renderDevice)
             .AddService(new ActiveCameraBuffer())
             .AddService(new RenderQueue())
@@ -66,8 +68,12 @@ public static class Program
 
         var shader = CreateTextureShader();
 
-        ImageResult image = ImageResult.FromMemory(File.ReadAllBytes("Assets/image.png"), ColorComponents.RedGreenBlueAlpha);
-        ImageResult image2 = ImageResult.FromMemory(File.ReadAllBytes("Assets/svo.png"), ColorComponents.RedGreenBlueAlpha);
+        ImageResult image, image2;
+        using (var stream = File.OpenRead("Assets/image.png"))
+        image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+        using (var stream = File.OpenRead("Assets/svo.png"))
+        image2 = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+
         var textureHandle = _renderDevice.CreateTexture(image.Width, image.Height, image.Data);
         var textureHandle2 = _renderDevice.CreateTexture(image2.Width, image2.Height, image2.Data);
 

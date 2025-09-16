@@ -1,10 +1,12 @@
-﻿namespace Engine.DataStructures;
+﻿using System.Collections;
 
-public class SparseSet<TValue>
+namespace Engine.DataStructures;
+
+public class SparseSet<TValue>(int initialCapacity = 1024) : IEnumerable<KeyValuePair<uint, TValue>>
 {
-    private uint[] _sparse = new uint[1024];
-    private uint[] _dense = new uint[1024];
-    private TValue[] _values = new TValue[1024];
+    private uint[] _sparse = new uint[initialCapacity];
+    private uint[] _dense = new uint[initialCapacity];
+    private TValue[] _values = new TValue[initialCapacity];
 
     public int Count { get; private set; }
 
@@ -89,4 +91,11 @@ public class SparseSet<TValue>
     {
         Count = 0;
     }
+
+    public IEnumerator<KeyValuePair<uint, TValue>> GetEnumerator()
+    {
+        for (int i = 0; i < Count; i++)
+            yield return new KeyValuePair<uint, TValue>(_dense[i], _values[i]);
+    }
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

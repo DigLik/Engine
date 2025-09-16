@@ -4,10 +4,10 @@ using Engine.ECS.Components;
 
 namespace Engine.ECS;
 
-internal sealed class HierarchyService(IWorldApi world)
+internal sealed class HierarchyService(IWorldApi world, int initialCapacity = 1024)
 {
-    private readonly SparseSet<Entity> _childToParent = new();
-    private readonly SparseSet<List<Entity>> _parentToChildren = new();
+    private readonly SparseSet<Entity> _childToParent = new(initialCapacity);
+    private readonly SparseSet<List<Entity>> _parentToChildren = new(initialCapacity);
     private static readonly IReadOnlyList<Entity> EmptyChildrenList = [];
 
     public void SetParent(Entity child, Entity parent, bool cascadeDelete)

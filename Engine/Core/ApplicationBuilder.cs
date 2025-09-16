@@ -1,6 +1,8 @@
 ﻿using Engine.Core.Services;
 using Engine.DataStructures;
 using Engine.ECS.Abstractions;
+using Engine.ECS.Archetypes;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Engine.Core;
 
@@ -9,6 +11,9 @@ public sealed class ApplicationBuilder
     private readonly List<ISystem> _systems = [];
     private IServiceRegistry? _serviceRegistry;
     private TypeIndex? _typeIndex;
+
+    private int _chunkCapacity = 256;
+    private int _initialEntityCapacity = 1024;
 
     public ApplicationBuilder() { }
 
@@ -37,9 +42,28 @@ public sealed class ApplicationBuilder
         return this;
     }
 
+    public ApplicationBuilder WithChunkCapacity(int capacity)
+    {
+        _chunkCapacity = capacity;
+        return this;
+    }
+
+    public ApplicationBuilder WithInitialEntityCapacity(int capacity)
+    {
+        _initialEntityCapacity = capacity;
+        return this;
+    }
+
     public Application Build()
     {
-        var app = new Application(_serviceRegistry, _typeIndex);
+        var app = new Application(_serviceRegistry, _typeIndex, application =>
+            new ArchetypeWorld(
+                application.Services.Resolve<TypeIndex>(),
+                application.Services,
+                _chunkCapacity,
+                _initialEntityCapacity
+            )
+        );
         app.AddSystems([.. _systems]);
         return app;
     }

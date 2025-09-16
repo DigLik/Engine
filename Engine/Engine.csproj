@@ -18,4 +18,8 @@
     <IsAotCompatible>True</IsAotCompatible>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="BepuPhysics" Version="2.4.0" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,5 @@
-﻿using Engine.ECS.Components.Rendering;
+﻿using Engine.DataStructures;
+using Engine.ECS.Components.Rendering;
 using Engine.Rendering.Abstractions;
 using Engine.Rendering.Data;
 using Engine.Rendering.Silk.OpenGL;
@@ -11,15 +12,11 @@ public sealed unsafe class SilkRenderDevice : IRenderDevice
 {
     private readonly GL _gl;
 
-    private readonly List<OpenGLMesh?> _meshes = [];
-    private readonly List<OpenGLShader?> _shaders = [];
-    private readonly List<OpenGLMaterial?> _materials = [];
-    private readonly List<OpenGLTexture?> _textures = [];
-
-    private int _nextMeshId = 0;
-    private int _nextShaderId = 0;
-    private int _nextMaterialId = 0;
-    private int _nextTextureId = 0;
+    private readonly SparseSet<OpenGLMesh> _meshes = [];
+    private readonly SparseSet<OpenGLShader> _shaders = [];
+    private readonly SparseSet<OpenGLMaterial> _materials = [];
+    private readonly SparseSet<OpenGLTexture> _textures = [];
+    private uint _nextResourceId = 1;
 
     private readonly uint _instanceMatrixBuffer;
     private const int MaxInstances = 10000;
@@ -43,21 +40,24 @@ public sealed unsafe class SilkRenderDevice : IRenderDevice
     public ShaderHandle CreateShader(string vertexSource, string fragmentSource)
     {
         var shader = new OpenGLShader(_gl, vertexSource, fragmentSource);
-        _shaders.Add(shader);
-        return new ShaderHandle(_nextShaderId++);
+        var id = _nextResourceId++;
+        _shaders.Add(id, shader);
+        return new ShaderHandle((int)id);
     }
 
     public TextureHandle CreateTexture(int width, int height, ReadOnlySpan<byte> data)
     {
         var texture = new OpenGLTexture(_gl, width, height, data);
-        _textures.Add(texture);
-        return new TextureHandle(_nextTextureId++);
+        var id = _nextResourceId++;
+        _textures.Add(id, texture);
+        return new TextureHandle((int)id);
     }
 
     public MeshHandle CreateMesh(ReadOnlySpan<Vertex> vertices, ReadOnlySpan<uint> indices)
     {
         var mesh = new OpenGLMesh(_gl, vertices, indices);
-        _meshes.Add(mesh);
+        var id = _nextResourceId++;
+        _meshes.Add(id, mesh);
 
         _gl.BindVertexArray(mesh.Vao);
         _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _instanceMatrixBuffer);
@@ -71,14 +71,15 @@ public sealed unsafe class SilkRenderDevice : IRenderDevice
         }
         _gl.BindVertexArray(0);
 
-        return new MeshHandle(_nextMeshId++);
+        return new MeshHandle((int)id);
     }
 
     public MaterialHandle CreateMaterial(ShaderHandle shader, Dictionary<string, object> parameters)
     {
         var material = new OpenGLMaterial(shader, parameters);
-        _materials.Add(material);
-        return new MaterialHandle(_nextMaterialId++);
+        var id = _nextResourceId++;
+        _materials.Add(id, material);
+        return new MaterialHandle((int)id);
     }
 
     public void BeginFrame()
@@ -97,12 +98,12 @@ public sealed unsafe class SilkRenderDevice : IRenderDevice
     {
         if (worldMatrices.IsEmpty) return;
 
-        var mesh = _meshes[meshHandle.Id];
-        var material = _materials[materialHandle.Id];
-        if (mesh is null || material is null) return;
-
-        var shader = _shaders[material.Shader.Id];
-        if (shader is null) return;
+        if (!_meshes.TryGetValue((uint)meshHandle.Id, out var mesh) ||
+            !_materials.TryGetValue((uint)materialHandle.Id, out var material) ||
+            !_shaders.TryGetValue((uint)material.Shader.Id, out var shader))
+        {
+            return;
+        }
 
         shader.Use();
 
@@ -111,8 +112,7 @@ public sealed unsafe class SilkRenderDevice : IRenderDevice
 
         if (material.Parameters.TryGetValue("u_Texture", out var textureObj) && textureObj is TextureHandle textureHandle)
         {
-            var texture = _textures[textureHandle.Id];
-            if (texture != null)
+            if (_textures.TryGetValue((uint)textureHandle.Id, out var texture))
             {
                 int textureLocation = shader.GetUniformLocation("u_Texture");
                 _gl.Uniform1(textureLocation, 0);
@@ -136,41 +136,49 @@ public sealed unsafe class SilkRenderDevice : IRenderDevice
 
     public void DestroyMesh(MeshHandle handle)
     {
-        if (handle.Id < _meshes.Count && _meshes[handle.Id] is not null)
+        if (_meshes.TryGetValue((uint)handle.Id, out var mesh))
         {
-            _meshes[handle.Id]!.Dispose();
-            _meshes[handle.Id] = null;
+            mesh.Dispose();
+            _meshes.Remove((uint)handle.Id);
         }
     }
 
     public void DestroyShader(ShaderHandle handle)
     {
-        if (handle.Id < _shaders.Count && _shaders[handle.Id] is not null)
+        if (_shaders.TryGetValue((uint)handle.Id, out var shader))
         {
-            _shaders[handle.Id]!.Dispose();
-            _shaders[handle.Id] = null;
+            shader.Dispose();
+            _shaders.Remove((uint)handle.Id);
         }
     }
 
     public void DestroyMaterial(MaterialHandle handle)
     {
-        if (handle.Id < _materials.Count)
-            _materials[handle.Id] = null;
+        _materials.Remove((uint)handle.Id);
     }
 
     public void DestroyTexture(TextureHandle handle)
     {
-        if (handle.Id < _textures.Count && _textures[handle.Id] is not null)
+        if (_textures.TryGetValue((uint)handle.Id, out var texture))
         {
-            _textures[handle.Id]!.Dispose();
-            _textures[handle.Id] = null;
+            texture.Dispose();
+            _textures.Remove((uint)handle.Id);
         }
     }
 
     public void Dispose()
     {
-        foreach (var mesh in _meshes) mesh?.Dispose();
-        foreach (var shader in _shaders) shader?.Dispose();
+        foreach (var kvp in _meshes) kvp.Value.Dispose();
+        _meshes.Clear();
+
+        foreach (var kvp in _shaders) kvp.Value.Dispose();
+        _shaders.Clear();
+
+        foreach (var kvp in _textures) kvp.Value.Dispose();
+        _textures.Clear();
+
+        _materials.Clear();
+
         _gl.DeleteBuffer(_instanceMatrixBuffer);
     }
 }

@@ -4,6 +4,7 @@ using Engine.DataStructures;
 using Engine.ECS;
 using Engine.ECS.Abstractions;
 using Engine.ECS.Archetypes;
+using Engine.ECS.Querying;
 
 namespace Engine.Core;
 
@@ -19,17 +20,21 @@ public sealed class Application : IApplication, IDisposable
 
     internal Application(
         IServiceRegistry? services = null,
-        TypeIndex? typeIndex = null)
+        TypeIndex? typeIndex = null,
+        Func<Application, IWorldApi>? worldFactory = null)
     {
         var types = typeIndex ?? new TypeIndex();
         Services = services ?? new ArrayServiceContainer(types);
 
-        World = new ArchetypeWorld(types, Services);
-
         Services.Register<IApplication>(this);
+        Services.Register(types);
+
+        World = worldFactory?.Invoke(this) ?? new ArchetypeWorld(types, Services);
+
         Services.Register(World);
         Services.Register(_time);
         Services.Register(_commandBuffer);
+        Services.Register(new QueryRegistry(World));
     }
 
     public static ApplicationBuilder CreateBuilder() => new();

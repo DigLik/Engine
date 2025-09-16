@@ -28,12 +28,13 @@ public sealed partial class ArchetypeWorld : IWorldApi, IDisposable
     private readonly Stack<uint> _free = new();
     private readonly Archetype _emptyArchetype;
 
-    public ArchetypeWorld(TypeIndex types, IServiceRegistry services, int chunkCapacity = 256)
+    public ArchetypeWorld(TypeIndex types, IServiceRegistry services, int chunkCapacity = 256, int initialEntityCapacity = 1024)
     {
+        _entities = new EntityRecord[initialEntityCapacity];
         _types = types;
         _registry = new ArchetypeRegistry(types, chunkCapacity);
         Services = services;
-        _hierarchy = new HierarchyService(this);
+        _hierarchy = new HierarchyService(this, initialEntityCapacity);
         _emptyArchetype = _registry.GetOrCreate(new TypeMask(), []);
     }
 

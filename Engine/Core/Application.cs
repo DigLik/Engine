@@ -1,4 +1,5 @@
-﻿using Engine.Core.Services;
+﻿using Engine.Core.Memory;
+using Engine.Core.Services;
 using Engine.Core.Timing;
 using Engine.DataStructures;
 using Engine.ECS;
@@ -13,6 +14,7 @@ public sealed class Application : IApplication, IDisposable
     private readonly List<ISystem> _systems = [];
     private readonly Time _time = new();
     private readonly CommandBuffer _commandBuffer = new();
+    private readonly LinearAllocator _frameAllocator = new(16 * 1024 * 1024); // 16 MB
     private bool _shouldClose;
 
     public IServiceRegistry Services { get; }
@@ -35,6 +37,7 @@ public sealed class Application : IApplication, IDisposable
         Services.Register(_time);
         Services.Register(_commandBuffer);
         Services.Register(new QueryRegistry(World));
+        Services.Register(_frameAllocator);
     }
 
     public static ApplicationBuilder CreateBuilder() => new();
@@ -56,6 +59,7 @@ public sealed class Application : IApplication, IDisposable
         if (deltaTime < 0f)
             deltaTime = 0f;
 
+        _frameAllocator.Reset();
         _time.Update(deltaTime);
         var timeSnapshot = TimeSnapshot.FromTime(_time);
 
@@ -69,5 +73,9 @@ public sealed class Application : IApplication, IDisposable
 
     public void RequestClose() => _shouldClose = true;
 
-    public void Dispose() => (World as IDisposable)?.Dispose();
+    public void Dispose()
+    {
+        _frameAllocator.Dispose();
+        (World as IDisposable)?.Dispose();
+    }
 }

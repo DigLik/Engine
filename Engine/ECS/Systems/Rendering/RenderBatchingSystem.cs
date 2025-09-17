@@ -16,7 +16,7 @@ public sealed class RenderBatchingSystem : SystemBase
     {
         _renderQueue.Clear();
 
-        Query<RenderMesh, LocalToWorld, VisibleTag>().ForEach((ref RenderMesh mesh, ref LocalToWorld transform, ref VisibleTag tag) =>
+        Query<RenderMesh, LocalToWorld, VisibleTag>().ForEach((ref mesh, ref transform, ref tag) =>
         {
             _renderQueue.Add(mesh, transform.Value);
         });

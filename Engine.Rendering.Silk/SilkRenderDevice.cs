@@ -71,7 +71,16 @@ public sealed unsafe class SilkRenderDevice : IRenderDevice
         }
         _gl.BindVertexArray(0);
 
-        return new MeshHandle((int)id);
+        var min = new Vector3(float.MaxValue);
+        var max = new Vector3(float.MinValue);
+        foreach (var vertex in vertices)
+        {
+            min = Vector3.Min(min, vertex.Position);
+            max = Vector3.Max(max, vertex.Position);
+        }
+        var bounds = new BoundingBox(min, max);
+
+        return new MeshHandle((int)id, bounds);
     }
 
     public MaterialHandle CreateMaterial(ShaderHandle shader, Dictionary<string, object> parameters)
@@ -130,9 +139,7 @@ public sealed unsafe class SilkRenderDevice : IRenderDevice
         _gl.BindVertexArray(0);
     }
 
-    public void EndFrame()
-    {
-    }
+    public void EndFrame() { }
 
     public void DestroyMesh(MeshHandle handle)
     {

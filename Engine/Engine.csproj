@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="BepuPhysics" Version="2.4.0" />
+    <PackageReference Include="StbImageSharp" Version="2.30.15" />
   </ItemGroup>
 
 </Project>

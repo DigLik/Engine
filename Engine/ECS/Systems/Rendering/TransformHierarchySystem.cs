@@ -11,12 +11,12 @@ public sealed class TransformHierarchySystem : SystemBase
 
     public override void OnInitialize()
     {
-        _rootsQuery = World.Builder().Without<Parent>().Build<TransformComponent>();
+        _rootsQuery = World.Builder().Without<Parent>().Build<Transform>();
     }
 
     public override void OnUpdate()
     {
-        World.Iterate<TransformComponent>(_rootsQuery!).ForEach((entity, ref transform) =>
+        World.Iterate<Transform>(_rootsQuery!).ForEach((entity, ref transform) =>
         {
             var worldMatrix = CalculateLocalMatrix(ref transform);
             World.Add(entity, new LocalToWorld(worldMatrix));
@@ -30,12 +30,12 @@ public sealed class TransformHierarchySystem : SystemBase
 
             foreach (var childEntity in World.GetChildren(parentEntity))
             {
-                if (!World.IsAlive(childEntity) || !World.Has<TransformComponent>(childEntity))
+                if (!World.IsAlive(childEntity) || !World.Has<Transform>(childEntity))
                 {
                     continue;
                 }
 
-                ref var childTransform = ref World.Ref<TransformComponent>(childEntity);
+                ref var childTransform = ref World.Ref<Transform>(childEntity);
 
                 var localMatrix = CalculateLocalMatrix(ref childTransform);
                 var worldMatrix = localMatrix * parentMatrix;
@@ -47,7 +47,7 @@ public sealed class TransformHierarchySystem : SystemBase
         }
     }
 
-    private static Matrix4x4 CalculateLocalMatrix(ref TransformComponent transform)
+    private static Matrix4x4 CalculateLocalMatrix(ref Transform transform)
     {
         return Matrix4x4.CreateScale(transform.Scale) *
                Matrix4x4.CreateFromQuaternion(transform.Rotation) *

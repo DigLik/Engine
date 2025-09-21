@@ -2,8 +2,10 @@
 
 namespace Engine.Rendering.Abstractions;
 
-public interface IAssetManager
+public interface IAssetService
 {
     MeshHandle LoadMesh(string path);
+    TextureHandle LoadTexture(string path);
+    ShaderHandle LoadShader(string vertexPath, string fragmentPath);
     MaterialHandle LoadMaterial(string path);
 }

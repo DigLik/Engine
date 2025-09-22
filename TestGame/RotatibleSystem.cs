@@ -1,4 +1,6 @@
-﻿namespace TestGame;
+﻿using static System.MathF;
+
+namespace TestGame;
 
 public class RotatibleSystem : SystemBase
 {
@@ -11,7 +13,7 @@ public class RotatibleSystem : SystemBase
 
     public override void OnUpdate()
     {
-        var targetAngularVelocity = new Vector3(0, MathF.PI / 4.0f, 0);
+        var targetAngularVelocity = new Vector3(0, (Sin(Time.TotalTime) + 2) / 4, 0);
 
         Query<PhysicsBody, RotatibleTag>()
             .AsParallel()

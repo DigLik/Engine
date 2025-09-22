@@ -88,7 +88,7 @@ public static class Program
         _world.Add(fallingCube, new PhysicsMaterial(friction: 2.0f));
 
         var fallingCube2 = _world.CreateEntity();
-        _world.Add(fallingCube2, new Transform(new Vector3(0.5f, 15, 0.1f), new(2), Quaternion.CreateFromYawPitchRoll(0.5f, 0.8f, 0.1f)));
+        _world.Add(fallingCube2, new Transform(new Vector3(0.5f, 14, 0.1f), new(2), Quaternion.CreateFromYawPitchRoll(0.5f, 0.8f, 0.1f)));
         _world.Add(fallingCube2, new RenderMesh { Mesh = cubeMesh, Material = svoMaterial });
         _world.Add(fallingCube2, new Visibility());
         _world.Add(fallingCube2, new BoxCollider());
@@ -118,7 +118,7 @@ public static class Program
         _world.Add(fallingCube, new PhysicsMaterial(friction: 2.0f));
 
         var fallingSphere = _world.CreateEntity();
-        _world.Add(fallingSphere, new Transform(new Vector3(0, 15, 0)));
+        _world.Add(fallingSphere, new Transform(new Vector3(0, 17, 0)));
         _world.Add(fallingSphere, new RenderMesh { Mesh = sphereMesh, Material = brickMaterial });
         _world.Add(fallingSphere, new Visibility());
         _world.Add(fallingSphere, new SphereCollider { Radius = 0.75f });

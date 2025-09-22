@@ -14,6 +14,7 @@ public class RotatibleSystem : SystemBase
         var targetAngularVelocity = new Vector3(0, MathF.PI / 4.0f, 0);
 
         Query<PhysicsBody, RotatibleTag>()
+            .AsParallel()
             .ForEach((entity, ref body, ref _) =>
             {
                 if (_physicsService.Simulation.Bodies.BodyExists(body.Handle))

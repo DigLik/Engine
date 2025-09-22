@@ -14,12 +14,15 @@ public sealed class Query
     private readonly List<Archetype> _candidateArchetypesCache = [];
     private int _cachedVersion = -1;
 
+    public readonly bool IsParallel;
+
     public readonly record struct ArchetypeMatch(Archetype Archetype, int[] ColumnIndices);
 
-    internal Query(ArchetypeRegistry registry, QueryDescription description, ReadOnlySpan<int> requiredTypeIds)
+    internal Query(ArchetypeRegistry registry, QueryDescription description, ReadOnlySpan<int> requiredTypeIds, bool isParallel)
     {
         _registry = registry;
         _description = description;
+        IsParallel = isParallel;
 
         _originalRequiredTypeIds = requiredTypeIds.ToArray();
 

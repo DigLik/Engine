@@ -26,7 +26,7 @@ public partial class QueryBuilder
         return this;
     }
 
-    internal Query BuildInternal(ReadOnlySpan<int> required)
+    internal Query BuildInternal(ReadOnlySpan<int> required, bool isParallel = false)
     {
         var withMask = new TypeMask();
         foreach (var id in WithTypeIds) withMask.Add(id);
@@ -36,6 +36,6 @@ public partial class QueryBuilder
         foreach (var id in WithoutTypeIds) withoutMask.Add(id);
 
         var desc = new QueryDescription(withMask, withoutMask);
-        return new Query(_registry, desc, required);
+        return new Query(_registry, desc, required, isParallel);
     }
 }

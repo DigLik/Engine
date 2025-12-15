@@ -22,16 +22,13 @@ public sealed class Application : IApplication, IDisposable
 
     internal Application(
         IServiceRegistry? services = null,
-        TypeIndex? typeIndex = null,
         Func<Application, IWorldApi>? worldFactory = null)
     {
-        var types = typeIndex ?? new TypeIndex();
-        Services = services ?? new ArrayServiceContainer(types);
+        Services = services ?? new ArrayServiceContainer();
 
         Services.Register<IApplication>(this);
-        Services.Register(types);
 
-        World = worldFactory?.Invoke(this) ?? new ArchetypeWorld(types, Services);
+        World = worldFactory?.Invoke(this) ?? new ArchetypeWorld(Services);
 
         Services.Register(World);
         Services.Register(_time);

@@ -22,9 +22,7 @@ public class RotatibleSystem : SystemBase
                 if (_physicsService.Simulation.Bodies.BodyExists(body.Handle))
                 {
                     var bodyReference = _physicsService.Simulation.Bodies[body.Handle];
-
                     bodyReference.Velocity.Angular = targetAngularVelocity;
-
                     bodyReference.Awake = true;
                 }
             });

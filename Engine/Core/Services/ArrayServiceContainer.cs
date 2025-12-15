@@ -2,14 +2,14 @@
 
 namespace Engine.Core.Services;
 
-public sealed class ArrayServiceContainer(TypeIndex types) : IServiceRegistry
+public sealed class ArrayServiceContainer : IServiceRegistry
 {
     private object?[] _slots = new object?[64];
 
     public void Register<T>(T service) where T : class
     {
         ArgumentNullException.ThrowIfNull(service);
-        int id = types.Get<T>();
+        int id = TypeIndex.Get<T>();
         if ((uint)id >= (uint)_slots.Length)
             Array.Resize(ref _slots, Math.Max(_slots.Length << 1, id + 1));
         _slots[id] = service;
@@ -17,7 +17,7 @@ public sealed class ArrayServiceContainer(TypeIndex types) : IServiceRegistry
 
     public bool TryResolve<T>(out T? service) where T : class
     {
-        int id = types.Get<T>();
+        int id = TypeIndex.Get<T>();
         if ((uint)id < (uint)_slots.Length && _slots[id] is not null)
         {
             service = (T)_slots[id]!;

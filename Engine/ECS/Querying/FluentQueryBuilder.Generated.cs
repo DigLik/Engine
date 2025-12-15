@@ -109,7 +109,14 @@ public readonly partial struct FluentQueryBuilder<T1> where T1 : unmanaged
     private readonly FluentQueryBuilder _builder;
     internal FluentQueryBuilder(FluentQueryBuilder builder) { _builder = builder; }
 
-    private Query GetQuery() => _builder.Registry.GetOrCreateQuery(_builder.WithIds, _builder.WithoutIds, [typeof(T1)], _builder.IsParallel);
+    private Query GetQuery() => _builder.Registry.GetOrCreateQuery(
+        _builder.WithIds,
+        _builder.WithoutIds,
+        [
+            _builder.World.GetTypeId<T1>()
+        ],
+        _builder.IsParallel
+    );
 
     public void ForEach(ForEachAction<T1> action) => _builder.World.Iterate<T1>(GetQuery()).ForEach(action);
     public void ForEach(ForEachWithEntityAction<T1> action) => _builder.World.Iterate<T1>(GetQuery()).ForEach(action);
@@ -136,7 +143,15 @@ public readonly partial struct FluentQueryBuilder<T1, T2> where T1 : unmanaged w
     private readonly FluentQueryBuilder _builder;
     internal FluentQueryBuilder(FluentQueryBuilder builder) { _builder = builder; }
 
-    private Query GetQuery() => _builder.Registry.GetOrCreateQuery(_builder.WithIds, _builder.WithoutIds, [typeof(T1), typeof(T2)], _builder.IsParallel);
+    private Query GetQuery() => _builder.Registry.GetOrCreateQuery(
+        _builder.WithIds,
+        _builder.WithoutIds,
+        [
+            _builder.World.GetTypeId<T1>(),
+            _builder.World.GetTypeId<T2>()
+        ],
+        _builder.IsParallel
+    );
 
     public void ForEach(ForEachAction<T1, T2> action) => _builder.World.Iterate<T1, T2>(GetQuery()).ForEach(action);
     public void ForEach(ForEachWithEntityAction<T1, T2> action) => _builder.World.Iterate<T1, T2>(GetQuery()).ForEach(action);
@@ -163,7 +178,16 @@ public readonly partial struct FluentQueryBuilder<T1, T2, T3> where T1 : unmanag
     private readonly FluentQueryBuilder _builder;
     internal FluentQueryBuilder(FluentQueryBuilder builder) { _builder = builder; }
 
-    private Query GetQuery() => _builder.Registry.GetOrCreateQuery(_builder.WithIds, _builder.WithoutIds, [typeof(T1), typeof(T2), typeof(T3)], _builder.IsParallel);
+    private Query GetQuery() => _builder.Registry.GetOrCreateQuery(
+        _builder.WithIds, 
+        _builder.WithoutIds, 
+        [
+            _builder.World.GetTypeId<T1>(),
+            _builder.World.GetTypeId<T2>(),
+            _builder.World.GetTypeId<T3>()
+        ],
+        _builder.IsParallel
+    );
 
     public void ForEach(ForEachAction<T1, T2, T3> action) => _builder.World.Iterate<T1, T2, T3>(GetQuery()).ForEach(action);
     public void ForEach(ForEachWithEntityAction<T1, T2, T3> action) => _builder.World.Iterate<T1, T2, T3>(GetQuery()).ForEach(action);
@@ -190,7 +214,17 @@ public readonly partial struct FluentQueryBuilder<T1, T2, T3, T4> where T1 : unm
     private readonly FluentQueryBuilder _builder;
     internal FluentQueryBuilder(FluentQueryBuilder builder) { _builder = builder; }
 
-    private Query GetQuery() => _builder.Registry.GetOrCreateQuery(_builder.WithIds, _builder.WithoutIds, [typeof(T1), typeof(T2), typeof(T3), typeof(T4)], _builder.IsParallel);
+    private Query GetQuery() => _builder.Registry.GetOrCreateQuery(
+        _builder.WithIds, 
+        _builder.WithoutIds, 
+        [
+            _builder.World.GetTypeId<T1>(), 
+            _builder.World.GetTypeId<T2>(), 
+            _builder.World.GetTypeId<T3>(), 
+            _builder.World.GetTypeId<T4>()
+        ], 
+        _builder.IsParallel
+    );
 
     public void ForEach(ForEachAction<T1, T2, T3, T4> action) => _builder.World.Iterate<T1, T2, T3, T4>(GetQuery()).ForEach(action);
     public void ForEach(ForEachWithEntityAction<T1, T2, T3, T4> action) => _builder.World.Iterate<T1, T2, T3, T4>(GetQuery()).ForEach(action);
@@ -217,7 +251,18 @@ public readonly partial struct FluentQueryBuilder<T1, T2, T3, T4, T5> where T1 :
     private readonly FluentQueryBuilder _builder;
     internal FluentQueryBuilder(FluentQueryBuilder builder) { _builder = builder; }
 
-    private Query GetQuery() => _builder.Registry.GetOrCreateQuery(_builder.WithIds, _builder.WithoutIds, [typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)], _builder.IsParallel);
+    private Query GetQuery() => _builder.Registry.GetOrCreateQuery(
+        _builder.WithIds, 
+        _builder.WithoutIds, 
+        [
+            _builder.World.GetTypeId<T1>(),
+            _builder.World.GetTypeId<T2>(),
+            _builder.World.GetTypeId<T3>(),
+            _builder.World.GetTypeId<T4>(),
+            _builder.World.GetTypeId<T5>()
+            ], 
+        _builder.IsParallel
+    );
 
     public void ForEach(ForEachAction<T1, T2, T3, T4, T5> action) => _builder.World.Iterate<T1, T2, T3, T4, T5>(GetQuery()).ForEach(action);
     public void ForEach(ForEachWithEntityAction<T1, T2, T3, T4, T5> action) => _builder.World.Iterate<T1, T2, T3, T4, T5>(GetQuery()).ForEach(action);
@@ -244,7 +289,19 @@ public readonly partial struct FluentQueryBuilder<T1, T2, T3, T4, T5, T6> where 
     private readonly FluentQueryBuilder _builder;
     internal FluentQueryBuilder(FluentQueryBuilder builder) { _builder = builder; }
 
-    private Query GetQuery() => _builder.Registry.GetOrCreateQuery(_builder.WithIds, _builder.WithoutIds, [typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6)], _builder.IsParallel);
+    private Query GetQuery() => _builder.Registry.GetOrCreateQuery(
+        _builder.WithIds, 
+        _builder.WithoutIds, 
+        [
+            _builder.World.GetTypeId<T1>(), 
+            _builder.World.GetTypeId<T2>(), 
+            _builder.World.GetTypeId<T3>(), 
+            _builder.World.GetTypeId<T4>(), 
+            _builder.World.GetTypeId<T5>(), 
+            _builder.World.GetTypeId<T6>()
+        ], 
+        _builder.IsParallel
+    );
 
     public void ForEach(ForEachAction<T1, T2, T3, T4, T5, T6> action) => _builder.World.Iterate<T1, T2, T3, T4, T5, T6>(GetQuery()).ForEach(action);
     public void ForEach(ForEachWithEntityAction<T1, T2, T3, T4, T5, T6> action) => _builder.World.Iterate<T1, T2, T3, T4, T5, T6>(GetQuery()).ForEach(action);
@@ -271,7 +328,20 @@ public readonly partial struct FluentQueryBuilder<T1, T2, T3, T4, T5, T6, T7> wh
     private readonly FluentQueryBuilder _builder;
     internal FluentQueryBuilder(FluentQueryBuilder builder) { _builder = builder; }
 
-    private Query GetQuery() => _builder.Registry.GetOrCreateQuery(_builder.WithIds, _builder.WithoutIds, [typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7)], _builder.IsParallel);
+    private Query GetQuery() => _builder.Registry.GetOrCreateQuery(
+        _builder.WithIds,
+        _builder.WithoutIds,
+        [
+            _builder.World.GetTypeId<T1>(),
+            _builder.World.GetTypeId<T2>(),
+            _builder.World.GetTypeId<T3>(),
+            _builder.World.GetTypeId<T4>(),
+            _builder.World.GetTypeId<T5>(),
+            _builder.World.GetTypeId<T6>(),
+            _builder.World.GetTypeId<T7>()
+        ],
+        _builder.IsParallel
+    );
 
     public void ForEach(ForEachAction<T1, T2, T3, T4, T5, T6, T7> action) => _builder.World.Iterate<T1, T2, T3, T4, T5, T6, T7>(GetQuery()).ForEach(action);
     public void ForEach(ForEachWithEntityAction<T1, T2, T3, T4, T5, T6, T7> action) => _builder.World.Iterate<T1, T2, T3, T4, T5, T6, T7>(GetQuery()).ForEach(action);
@@ -298,7 +368,20 @@ public readonly partial struct FluentQueryBuilder<T1, T2, T3, T4, T5, T6, T7, T8
     private readonly FluentQueryBuilder _builder;
     internal FluentQueryBuilder(FluentQueryBuilder builder) { _builder = builder; }
 
-    private Query GetQuery() => _builder.Registry.GetOrCreateQuery(_builder.WithIds, _builder.WithoutIds, [typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8)], _builder.IsParallel);
+    private Query GetQuery() => _builder.Registry.GetOrCreateQuery(
+        _builder.WithIds,
+        _builder.WithoutIds,
+        [
+            _builder.World.GetTypeId<T1>(),
+            _builder.World.GetTypeId<T2>(),
+            _builder.World.GetTypeId<T3>(),
+            _builder.World.GetTypeId<T4>(),
+            _builder.World.GetTypeId<T5>(),
+            _builder.World.GetTypeId<T6>(),
+            _builder.World.GetTypeId<T7>(),
+            _builder.World.GetTypeId<T8>()
+        ],
+        _builder.IsParallel);
 
     public void ForEach(ForEachAction<T1, T2, T3, T4, T5, T6, T7, T8> action) => _builder.World.Iterate<T1, T2, T3, T4, T5, T6, T7, T8>(GetQuery()).ForEach(action);
     public void ForEach(ForEachWithEntityAction<T1, T2, T3, T4, T5, T6, T7, T8> action) => _builder.World.Iterate<T1, T2, T3, T4, T5, T6, T7, T8>(GetQuery()).ForEach(action);

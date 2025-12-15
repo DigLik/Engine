@@ -6,7 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
-    <PublishAot>False</PublishAot>
   </PropertyGroup>
 
   <ItemGroup>
@@ -49,6 +48,5 @@
   <ItemGroup>
     <Folder Include="Assets\materials\" />
     <Folder Include="Assets\models\" />
-    <Folder Include="Assets\shaders\" />
   </ItemGroup>
 </Project>

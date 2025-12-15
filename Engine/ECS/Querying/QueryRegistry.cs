@@ -9,16 +9,16 @@ public sealed class QueryRegistry(IWorldApi world)
     private readonly IWorldApi _world = world;
     private readonly Dictionary<int, Query> _queryCache = [];
 
-    internal Query GetOrCreateQuery(List<int>? withIds, List<int>? withoutIds, Type[] requiredTypes, bool isParallel)
+    internal Query GetOrCreateQuery(List<int>? withIds, List<int>? withoutIds, ReadOnlySpan<int> requiredTypeIds, bool isParallel)
     {
         var allWithIds = ListPool<int>.Rent(withIds);
         if (withIds != null) ListPool<int>.Return(withIds);
 
         try
         {
-            foreach (var type in requiredTypes)
+            foreach (var id in requiredTypeIds)
             {
-                allWithIds.Add(_world.GetTypeId(type));
+                allWithIds.Add(id);
             }
             allWithIds.Sort();
             withoutIds?.Sort();
@@ -37,15 +37,10 @@ public sealed class QueryRegistry(IWorldApi world)
                 if (allWithIds.Count > 0) qb.WithTypeIds.AddRange(allWithIds);
                 if (withoutIds != null) qb.WithoutTypeIds.AddRange(withoutIds);
 
-                var requiredIds = new int[requiredTypes.Length];
-                for (int i = 0; i < requiredTypes.Length; i++)
-                {
-                    requiredIds[i] = _world.GetTypeId(requiredTypes[i]);
-                }
-
-                query = qb.BuildInternal(requiredIds, isParallel);
+                query = qb.BuildInternal(requiredTypeIds, isParallel);
                 _queryCache[hashCode] = query;
             }
+
             return query;
         }
         finally

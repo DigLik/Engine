@@ -83,9 +83,7 @@ public sealed class AssetService(IRenderDevice renderDevice, string assetRoot) :
         var parameters = new Dictionary<string, object>();
 
         foreach (var (uniformName, texturePath) in definition.Textures)
-        {
             parameters[uniformName] = LoadTexture(texturePath);
-        }
 
         var newHandle = renderDevice.CreateMaterial(shaderHandle, parameters);
         _materialCache[path] = newHandle;

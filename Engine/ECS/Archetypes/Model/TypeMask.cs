@@ -92,23 +92,17 @@ public sealed class TypeMask(int capacityTypes = 64) : IEquatable<TypeMask>
 
         var minLength = Math.Min(_bits.Length, other._bits.Length);
         for (var i = 0; i < minLength; i++)
-        {
             if (_bits[i] != other._bits[i]) return false;
-        }
 
         if (_bits.Length > other._bits.Length)
         {
             for (var i = minLength; i < _bits.Length; i++)
-            {
                 if (_bits[i] != 0) return false;
-            }
         }
         else if (other._bits.Length > _bits.Length)
         {
             for (var i = minLength; i < other._bits.Length; i++)
-            {
                 if (other._bits[i] != 0) return false;
-            }
         }
 
         return true;

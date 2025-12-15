@@ -3,7 +3,7 @@ using Engine.ECS.Archetypes.Model;
 
 namespace Engine.ECS.Archetypes;
 
-public sealed class ArchetypeRegistry(TypeIndex types, int chunkCapacity = 256) : IDisposable
+public sealed class ArchetypeRegistry(int chunkCapacity = 256) : IDisposable
 {
     private readonly Dictionary<ArchetypeKey, Archetype> _byKey = [];
     private readonly Dictionary<int, List<Archetype>> _typeToArch = [];
@@ -14,7 +14,7 @@ public sealed class ArchetypeRegistry(TypeIndex types, int chunkCapacity = 256) 
 
     public int GetTypeId<T>() where T : unmanaged
     {
-        int id = types.Get<T>();
+        int id = TypeIndex.Get<T>();
         if (!_columnFactories.ContainsKey(id))
         {
             _columnFactories[id] = (capacity) => {

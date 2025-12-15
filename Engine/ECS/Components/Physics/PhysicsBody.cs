@@ -4,12 +4,12 @@ namespace Engine.ECS.Components.Physics;
 
 public record struct PhysicsBody()
 {
-    public BodyHandle Handle { get; set; }
-    public float Mass { get; set; } = 1.0f;
-    public bool IsKinematic { get; set; }
+    public BodyHandle Handle;
+    public float Mass = 1.0f;
+    public bool IsKinematic;
 }
 
 public record struct PhysicsStatic
 {
-    public StaticHandle Handle { get; set; }
+    public StaticHandle Handle;
 }

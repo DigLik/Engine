@@ -10,7 +10,6 @@ public sealed class ApplicationBuilder
 {
     private readonly List<ISystem> _systems = [];
     private IServiceRegistry? _serviceRegistry;
-    private TypeIndex? _typeIndex;
 
     private int _chunkCapacity = 256;
     private int _initialEntityCapacity = 1024;
@@ -25,14 +24,8 @@ public sealed class ApplicationBuilder
 
     public ApplicationBuilder AddService<T>(T service) where T : class
     {
-        _serviceRegistry ??= new ArrayServiceContainer(_typeIndex ??= new TypeIndex());
+        _serviceRegistry ??= new ArrayServiceContainer();
         _serviceRegistry.Register(service);
-        return this;
-    }
-
-    public ApplicationBuilder UseTypeIndex(TypeIndex typeIndex)
-    {
-        _typeIndex = typeIndex;
         return this;
     }
 
@@ -56,9 +49,8 @@ public sealed class ApplicationBuilder
 
     public Application Build()
     {
-        var app = new Application(_serviceRegistry, _typeIndex, application =>
+        var app = new Application(_serviceRegistry, application =>
             new ArchetypeWorld(
-                application.Services.Resolve<TypeIndex>(),
                 application.Services,
                 _chunkCapacity,
                 _initialEntityCapacity

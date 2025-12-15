@@ -2,11 +2,11 @@
 
 public record struct Camera
 {
-    public ProjectionType ProjectionType { get; set; }
-    public float FieldOfView { get; set; }
-    public float OrthographicSize { get; set; }
-    public float NearPlane { get; set; }
-    public float FarPlane { get; set; }
-    public Vector2 ViewportSize { get; set; }
-    public bool IsMain { get; set; }
+    public ProjectionType ProjectionType;
+    public float FieldOfView;
+    public float OrthographicSize;
+    public float NearPlane;
+    public float FarPlane;
+    public Vector2 ViewportSize;
+    public bool IsMain;
 }

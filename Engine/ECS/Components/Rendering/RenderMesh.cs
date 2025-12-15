@@ -2,6 +2,6 @@
 
 public record struct RenderMesh
 {
-    public MeshHandle Mesh { get; set; }
-    public MaterialHandle Material { get; set; }
+    public MeshHandle Mesh;
+    public MaterialHandle Material;
 }

@@ -4,6 +4,7 @@ using Engine.ECS.Abstractions;
 using Engine.ECS.Archetypes.Model;
 using Engine.ECS.Archetypes.QueryDefinition;
 using Engine.ECS.Components;
+using System;
 using System.Runtime.CompilerServices;
 
 namespace Engine.ECS.Archetypes;
@@ -12,7 +13,6 @@ public sealed partial class ArchetypeWorld : IWorldApi, IDisposable
 {
     private readonly ArchetypeRegistry _registry;
     private readonly HierarchyService _hierarchy;
-    private readonly TypeIndex _types;
     public IServiceRegistry Services { get; }
 
     private struct EntityRecord
@@ -28,11 +28,10 @@ public sealed partial class ArchetypeWorld : IWorldApi, IDisposable
     private readonly Stack<uint> _free = new();
     private readonly Archetype _emptyArchetype;
 
-    public ArchetypeWorld(TypeIndex types, IServiceRegistry services, int chunkCapacity = 256, int initialEntityCapacity = 1024)
+    public ArchetypeWorld(IServiceRegistry services, int chunkCapacity = 256, int initialEntityCapacity = 1024)
     {
         _entities = new EntityRecord[initialEntityCapacity];
-        _types = types;
-        _registry = new ArchetypeRegistry(types, chunkCapacity);
+        _registry = new ArchetypeRegistry(chunkCapacity);
         Services = services;
         _hierarchy = new HierarchyService(this, initialEntityCapacity);
         _emptyArchetype = _registry.GetOrCreate(new TypeMask(), []);
@@ -260,11 +259,13 @@ public sealed partial class ArchetypeWorld : IWorldApi, IDisposable
     }
 
     public QueryBuilder Builder() => new(_registry);
+
     public void SetParent(Entity child, Entity parent, bool cascadeDelete = true) => _hierarchy.SetParent(child, parent, cascadeDelete);
     public void RemoveParent(Entity child) => _hierarchy.RemoveParent(child);
     public Entity GetParent(Entity child) => _hierarchy.GetParent(child);
     public IReadOnlyList<Entity> GetChildren(Entity parent) => _hierarchy.GetChildren(parent);
-    public int GetTypeId<T>() where T : unmanaged => _registry.GetTypeId<T>();
-    public int GetTypeId(Type type) => _types.Get(type);
+
+    public int GetTypeId<T>() where T : unmanaged => TypeIndex.Get<T>();
+
     public void Dispose() => _registry.Dispose();
 }

@@ -14,7 +14,7 @@ public sealed class Archetype : IDisposable
 
     public IReadOnlyList<Chunk> Chunks => _chunks;
 
-    public Archetype(int id, ArchetypeKey key, ReadOnlySpan<int> typeIds, int chunkCapacity = 256)
+    public Archetype(int id, ArchetypeKey key, ReadOnlySpan<int> typeIds, int chunkCapacity = 4)
     {
         Id = id;
         Key = key;

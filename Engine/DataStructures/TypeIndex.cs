@@ -1,17 +1,34 @@
-﻿namespace Engine.DataStructures;
+﻿using System.Runtime.CompilerServices;
 
-public sealed class TypeIndex
+namespace Engine.DataStructures;
+
+internal static class ComponentTypeCache<T>
 {
-    private readonly Dictionary<Type, int> _ids = new(128);
-    private int _next = 0;
+    public static int Id = -1;
+}
 
-    public int Get<T>() => Get(typeof(T));
+public static class TypeIndex
+{
+    private static int _nextId = 0;
+    private static readonly Lock _lock = new();
 
-    public int Get(Type t)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int Get<T>()
     {
-        if (_ids.TryGetValue(t, out var id)) return id;
-        id = ++_next;
-        _ids[t] = id;
-        return id;
+        if (ComponentTypeCache<T>.Id != -1) return ComponentTypeCache<T>.Id;
+        return Register<T>();
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static int Register<T>()
+    {
+        lock (_lock)
+        {
+            if (ComponentTypeCache<T>.Id != -1) return ComponentTypeCache<T>.Id;
+
+            int id = ++_nextId;
+            ComponentTypeCache<T>.Id = id;
+            return id;
+        }
     }
 }

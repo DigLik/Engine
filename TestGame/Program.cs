@@ -1,4 +1,6 @@
 ﻿using Engine.ECS.Abstractions;
+using Engine.Input;
+using Engine.Input.Silk;
 using Engine.Rendering;
 using Engine.Rendering.Abstractions;
 using Engine.Rendering.Silk;
@@ -43,20 +45,33 @@ public static class Program
         _gl = _window!.CreateOpenGL();
         var renderDevice = new SilkRenderDevice(_gl);
         var assetService = new AssetService(renderDevice, "Assets");
+        var inputService = new SilkInputService(_window);
 
         _app = Application.CreateBuilder()
             .WithInitialEntityCapacity(16)
             .WithChunkCapacity(16)
-            .AddService<IRenderDevice>(renderDevice)
-            .AddService<IAssetService>(assetService)
+
             .AddDefaultServices()
             .AddDefaultSystems()
+
+            .AddService<IRenderDevice>(renderDevice)
+            .AddService<IAssetService>(assetService)
+            .AddService<IInputService>(inputService)
+
             .AddSystem<RotatibleSystem>()
+            .AddSystem<CameraRotateSystem>()
+
             .Build();
 
         _world = _app.Services.Resolve<IWorldApi>();
 
         CreateScene();
+
+        inputService.Keyboard.OnKeyDown += key =>
+        {
+            if (key == Key.Escape)
+                _app.RequestClose();
+        };
     }
 
     private static void CreateScene()
@@ -159,7 +174,8 @@ public static class Program
             _frameCounter = 0;
         }
 
-        _app?.Tick((float)deltaTime);
+        if (!_app.Tick((float)deltaTime))
+            _window.Close();
     }
 
     private static void OnResize(Vector2D<int> newSize)

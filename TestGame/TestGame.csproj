@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
@@ -14,6 +14,7 @@
   </ItemGroup>
 	
   <ItemGroup>
+    <ProjectReference Include="..\Engine.Input.Silk\Engine.Input.Silk.csproj" />
     <ProjectReference Include="..\Engine.Rendering.Silk\Engine.Rendering.Silk.csproj" />
     <ProjectReference Include="..\Engine\Engine.csproj" />
   </ItemGroup>

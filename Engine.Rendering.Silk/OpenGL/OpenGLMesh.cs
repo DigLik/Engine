@@ -9,21 +9,25 @@ internal sealed class OpenGLMesh : IDisposable
     public readonly uint Vao;
     public readonly uint Vbo;
     public readonly uint Ebo;
-    public readonly uint IndexCount;
-    private readonly GL _gl;
 
-    public unsafe OpenGLMesh(GL gl, ReadOnlySpan<Vertex> vertices, ReadOnlySpan<uint> indices)
+    public uint IndexCount { get; private set; }
+
+    private readonly GL _gl;
+    private readonly BufferUsageARB _usage;
+
+    public unsafe OpenGLMesh(GL gl, ReadOnlySpan<Vertex> vertices, ReadOnlySpan<uint> indices, bool isDynamic)
     {
         _gl = gl;
         IndexCount = (uint)indices.Length;
+        _usage = isDynamic ? BufferUsageARB.DynamicDraw : BufferUsageARB.StaticDraw;
 
         Vbo = _gl.GenBuffer();
         _gl.BindBuffer(BufferTargetARB.ArrayBuffer, Vbo);
-        _gl.BufferData(BufferTargetARB.ArrayBuffer, vertices, BufferUsageARB.StaticDraw);
+        _gl.BufferData(BufferTargetARB.ArrayBuffer, vertices, _usage);
 
         Ebo = _gl.GenBuffer();
         _gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, Ebo);
-        _gl.BufferData(BufferTargetARB.ElementArrayBuffer, indices, BufferUsageARB.StaticDraw);
+        _gl.BufferData(BufferTargetARB.ElementArrayBuffer, indices, _usage);
 
         Vao = _gl.GenVertexArray();
         _gl.BindVertexArray(Vao);
@@ -41,6 +45,17 @@ internal sealed class OpenGLMesh : IDisposable
         _gl.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, (uint)sizeof(Vertex), (void*)(sizeof(Vector3) * 2));
 
         _gl.BindVertexArray(0);
+    }
+
+    public unsafe void Update(ReadOnlySpan<Vertex> vertices, ReadOnlySpan<uint> indices)
+    {
+        IndexCount = (uint)indices.Length;
+
+        _gl.BindBuffer(BufferTargetARB.ArrayBuffer, Vbo);
+        _gl.BufferData(BufferTargetARB.ArrayBuffer, vertices, _usage);
+
+        _gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, Ebo);
+        _gl.BufferData(BufferTargetARB.ElementArrayBuffer, indices, _usage);
     }
 
     public void Dispose()

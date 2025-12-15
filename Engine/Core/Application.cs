@@ -1,11 +1,11 @@
 ﻿using Engine.Core.Memory;
 using Engine.Core.Services;
 using Engine.Core.Timing;
-using Engine.DataStructures;
 using Engine.ECS;
 using Engine.ECS.Abstractions;
 using Engine.ECS.Archetypes;
 using Engine.ECS.Querying;
+using Engine.Input;
 
 namespace Engine.Core;
 
@@ -17,6 +17,7 @@ public sealed class Application : IApplication, IDisposable
     private readonly LinearAllocator _frameAllocator = new(16 * 1024 * 1024); // 16 MB
     private bool _shouldClose;
 
+    private IInputService? _inputService;
     public IServiceRegistry Services { get; }
     public IWorldApi World { get; }
 
@@ -64,6 +65,11 @@ public sealed class Application : IApplication, IDisposable
             system.Update(World, timeSnapshot, Services);
 
         _commandBuffer.Playback(World);
+
+        if (_inputService == null)
+            Services.TryResolve(out _inputService);
+
+        _inputService?.Update();
 
         return !_shouldClose;
     }

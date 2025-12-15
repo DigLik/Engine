@@ -53,15 +53,14 @@ public sealed unsafe class SilkRenderDevice : IRenderDevice
         return new TextureHandle((int)id);
     }
 
-    public MeshHandle CreateMesh(ReadOnlySpan<Vertex> vertices, ReadOnlySpan<uint> indices)
+    public MeshHandle CreateMesh(ReadOnlySpan<Vertex> vertices, ReadOnlySpan<uint> indices, bool isDynamic = false)
     {
-        var mesh = new OpenGLMesh(_gl, vertices, indices);
+        var mesh = new OpenGLMesh(_gl, vertices, indices, isDynamic);
         var id = _nextResourceId++;
         _meshes.Add(id, mesh);
 
         _gl.BindVertexArray(mesh.Vao);
         _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _instanceMatrixBuffer);
-
         for (int i = 0; i < 4; i++)
         {
             uint location = 3u + (uint)i;
@@ -81,6 +80,12 @@ public sealed unsafe class SilkRenderDevice : IRenderDevice
         var bounds = new BoundingBox(min, max);
 
         return new MeshHandle((int)id, bounds);
+    }
+
+    public void UpdateMesh(MeshHandle handle, ReadOnlySpan<Vertex> vertices, ReadOnlySpan<uint> indices)
+    {
+        if (_meshes.TryGetValue((uint)handle.Id, out var mesh))
+            mesh.Update(vertices, indices);
     }
 
     public MaterialHandle CreateMaterial(ShaderHandle shader, Dictionary<string, object> parameters)

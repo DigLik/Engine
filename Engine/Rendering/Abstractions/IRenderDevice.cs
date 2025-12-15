@@ -5,7 +5,10 @@ namespace Engine.Rendering.Abstractions;
 
 public interface IRenderDevice : IDisposable
 {
-    MeshHandle CreateMesh(ReadOnlySpan<Vertex> vertices, ReadOnlySpan<uint> indices);
+    MeshHandle CreateMesh(ReadOnlySpan<Vertex> vertices, ReadOnlySpan<uint> indices, bool isDynamic = false);
+
+    void UpdateMesh(MeshHandle handle, ReadOnlySpan<Vertex> vertices, ReadOnlySpan<uint> indices);
+
     MaterialHandle CreateMaterial(ShaderHandle shader, Dictionary<string, object> parameters);
     ShaderHandle CreateShader(string vertexSource, string fragmentSource);
     TextureHandle CreateTexture(int width, int height, ReadOnlySpan<byte> data);

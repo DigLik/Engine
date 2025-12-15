@@ -24,7 +24,7 @@ public sealed class AssetService(IRenderDevice renderDevice, string assetRoot) :
             throw new FileNotFoundException("Mesh file not found.", fullPath);
 
         ParseObj(File.ReadAllText(fullPath), out var vertices, out var indices);
-        var newHandle = renderDevice.CreateMesh(vertices, indices);
+        var newHandle = renderDevice.CreateMesh(vertices, indices, isDynamic: false);
 
         _meshCache[path] = newHandle;
         return newHandle;

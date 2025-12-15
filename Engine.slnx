@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Engine.Input.Silk/Engine.Input.Silk.csproj" />
+  <Project Path="Engine.Rendering.Silk/Engine.Rendering.Silk.csproj" />
+  <Project Path="Engine/Engine.csproj" />
+  <Project Path="TestGame/TestGame.csproj" />
+</Solution>

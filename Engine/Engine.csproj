@@ -7,7 +7,6 @@
     <AssemblyName>Engine</AssemblyName>
     <RootNamespace>Engine</RootNamespace>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

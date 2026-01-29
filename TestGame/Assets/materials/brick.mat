@@ -1,9 +1,0 @@
-{
-  "shader": {
-    "vertex": "shaders/default.vert",
-    "fragment": "shaders/default.frag"
-  },
-  "textures": {
-    "u_Texture": "image.png"
-  }
-}

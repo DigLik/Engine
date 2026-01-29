@@ -1,6 +1,7 @@
 <Solution>
-  <Project Path="Engine.Input.Silk/Engine.Input.Silk.csproj" />
-  <Project Path="Engine.Rendering.Silk/Engine.Rendering.Silk.csproj" />
-  <Project Path="Engine/Engine.csproj" />
-  <Project Path="TestGame/TestGame.csproj" />
+  <Project Path="Engine.Base/Engine.Base.csproj" Id="0da0ce3f-a3ca-4bc7-9065-1b94545ddc48" />
+  <Project Path="Engine.Core.Tests.Base/Engine.Core.Tests.Base.csproj" Id="2a4ce4ed-4b5a-4d7f-94bf-8b749e9229a1" />
+  <Project Path="Engine.Core/Engine.Core.csproj" Id="3a03d0ed-bd26-46e6-9b5e-e5948db65fa7" />
+  <Project Path="Engine.Kits.Default.Tests/Engine.Kits.Default.Tests.csproj" Id="f926c847-c936-4bb9-9087-6745e425a107" />
+  <Project Path="Engine.Kits.Default/Engine.Kits.Default.csproj" Id="958972ad-e5d2-407f-b6c7-d70399961fac" />
 </Solution>
